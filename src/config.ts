@@ -32,6 +32,38 @@ export const network = {
   singleNatGateway: cfg.getBoolean("singleNatGateway") ?? true,
 };
 
+export const database = {
+  /** PostgreSQL engine major version. */
+  engineVersion: cfg.get("dbEngineVersion") ?? "16",
+  /** RDS instance class. */
+  instanceClass: cfg.get("dbInstanceClass") ?? "db.t4g.micro",
+  /** Initial allocated storage, in GiB. */
+  allocatedStorage: cfg.getNumber("dbAllocatedStorage") ?? 20,
+  /** Storage autoscaling ceiling, in GiB. */
+  maxAllocatedStorage: cfg.getNumber("dbMaxAllocatedStorage") ?? 100,
+  /** Master username / GZCTF DB user. */
+  username: cfg.get("dbUsername") ?? "gzctf",
+  /** Database name. */
+  databaseName: cfg.get("dbName") ?? "gzctf",
+  /** Optional explicit password (secret). Generated if unset. */
+  password: cfg.getSecret("dbPassword"),
+  /** Deploy across multiple AZs for HA. */
+  multiAz: cfg.getBoolean("dbMultiAz") ?? false,
+  /** Automated backup retention, in days. */
+  backupRetentionDays: cfg.getNumber("dbBackupRetentionDays") ?? 7,
+  /** Block accidental deletion of the instance. */
+  deletionProtection: cfg.getBoolean("dbDeletionProtection") ?? false,
+};
+
+export const cache = {
+  /** Redis engine version. */
+  engineVersion: cfg.get("redisEngineVersion") ?? "7.1",
+  /** ElastiCache node type. */
+  nodeType: cfg.get("redisNodeType") ?? "cache.t4g.micro",
+  /** Number of cache nodes (1 = single node; >1 adds replicas + failover). */
+  numCacheClusters: cfg.getNumber("redisNumCacheClusters") ?? 1,
+};
+
 export const cluster = {
   /** Kubernetes control-plane version. */
   k8sVersion: cfg.get("k8sVersion") ?? "1.32",

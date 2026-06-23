@@ -51,7 +51,10 @@ the distributed cache in ElastiCache Redis.
 │   ├── config.ts       # typed stack configuration
 │   ├── network.ts      # VPC, subnets, NAT
 │   ├── irsa.ts         # IAM Roles for Service Accounts helper
-│   └── cluster.ts      # EKS control plane, node group, IRSA, add-ons
+│   ├── cluster.ts      # EKS control plane, node group, IRSA, add-ons
+│   ├── security.ts     # data-store security-group helper
+│   ├── database.ts     # RDS PostgreSQL
+│   └── cache.ts        # ElastiCache Redis
 ├── Pulumi.yaml         # project definition
 ├── Pulumi.dev.yaml     # example (non-secret) dev-stack config
 └── .github/workflows/  # CI: type-check + (opt-in) pulumi preview
@@ -100,15 +103,27 @@ kubectl get nodes
 | `nodeMinSize`      | `2`            | Minimum worker node count                    |
 | `nodeMaxSize`      | `4`            | Maximum worker node count                    |
 | `nodeDiskSize`     | `50`           | Worker node root volume size (GiB)           |
+| `dbInstanceClass`  | `db.t4g.micro` | RDS instance class                           |
+| `dbEngineVersion`  | `16`           | PostgreSQL major version                     |
+| `dbAllocatedStorage` | `20`         | RDS storage (GiB), autoscales to 100         |
+| `dbUsername` / `dbName` | `gzctf`   | RDS master user / database name              |
+| `dbPassword`       | _generated_    | **Secret.** Set with `--secret`; auto-generated if unset |
+| `redisNodeType`    | `cache.t4g.micro` | ElastiCache node type                     |
+| `redisNumCacheClusters` | `1`       | Redis nodes (>1 → replicas + failover)       |
 
-`aws:region` is set via the standard AWS provider config.
+`aws:region` is set via the standard AWS provider config. Set the DB password
+(optional — one is generated otherwise) with:
+
+```bash
+pulumi config set --secret gzctf-eks:dbPassword 'a-strong-password'
+```
 
 ## Roadmap
 
 - [x] **PR #1** — Project scaffold, CI, VPC networking
 - [x] **PR #2** — EKS cluster, managed node group, IRSA, EKS add-ons (CNI,
       CoreDNS, kube-proxy, EBS CSI)
-- [ ] **PR #3** — Data layer: RDS PostgreSQL + ElastiCache Redis
+- [x] **PR #3** — Data layer: RDS PostgreSQL + ElastiCache Redis
 - [ ] **PR #4** — EFS storage class + AWS Load Balancer Controller
 - [ ] **PR #5** — GZCTF Kubernetes workload (Deployment, Service, Ingress, RBAC)
 
