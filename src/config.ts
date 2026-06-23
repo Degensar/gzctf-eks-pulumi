@@ -69,6 +69,27 @@ export const loadBalancer = {
   chartVersion: cfg.get("albChartVersion") ?? "3.4.0",
 };
 
+export const gzctf = {
+  /** Container image (repository:tag) for the GZCTF platform. */
+  image: cfg.get("gzctfImage") ?? "gztime/gzctf:v1.8.6",
+  /** Number of GZCTF replicas (safe to raise — Redis + EFS back the state). */
+  replicas: cfg.getNumber("gzctfReplicas") ?? 1,
+  /** Initial admin password (secret). Generated if unset. */
+  adminPassword: cfg.getSecret("gzctfAdminPassword"),
+  /** Namespace the GZCTF platform runs in. */
+  platformNamespace: "gzctf",
+  /** Namespace GZCTF launches challenge containers into. */
+  challengeNamespace: "gzctf-challenges",
+  /** Public host players use (PlatformProxy entry); set to your domain/ALB DNS. */
+  publicEntry: cfg.get("publicEntry") ?? "",
+  /** Optional Ingress host. Empty means match any host on the ALB. */
+  domainName: cfg.get("domainName") ?? "",
+  /** Optional ACM certificate ARN to enable HTTPS on the ALB. */
+  acmCertificateArn: cfg.get("acmCertificateArn") ?? "",
+  /** Size requested for the EFS-backed /app/files PVC. */
+  filesStorageSize: cfg.get("gzctfFilesStorageSize") ?? "10Gi",
+};
+
 export const cluster = {
   /** Kubernetes control-plane version. */
   k8sVersion: cfg.get("k8sVersion") ?? "1.32",

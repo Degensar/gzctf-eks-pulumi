@@ -57,6 +57,7 @@ the distributed cache in ElastiCache Redis.
 │   ├── cache.ts        # ElastiCache Redis
 │   ├── storage.ts      # EFS filesystem + CSI driver + StorageClass
 │   ├── loadBalancer.ts # AWS Load Balancer Controller (Helm + IRSA)
+│   ├── gzctf.ts        # GZCTF workload: ns, RBAC, secret, PVC, Deploy, Svc, Ingress
 │   └── iam/            # vendored IAM policy for the LB controller
 ├── Pulumi.yaml         # project definition
 ├── Pulumi.dev.yaml     # example (non-secret) dev-stack config
@@ -86,11 +87,31 @@ pulumi config set aws:region us-east-1
 pulumi preview
 pulumi up
 
-# Fetch a kubeconfig once the cluster module lands (PR #2)
+# Fetch a kubeconfig and talk to the cluster
 pulumi stack output kubeconfig --show-secrets > kubeconfig
 export KUBECONFIG=$PWD/kubeconfig
 kubectl get nodes
+
+# After the stack is up: find the public URL and the initial admin password
+pulumi stack output gzctfIngressHostname
+pulumi stack output gzctfAdminPassword --show-secrets
 ```
+
+Then point your domain (or set `publicEntry` to the ALB DNS name) and log in
+as `Admin` with that password. For challenge proxying to work, set
+`publicEntry` to the host players reach the platform on:
+
+```bash
+pulumi config set gzctf-eks:publicEntry ctf.example.com
+pulumi config set gzctf-eks:domainName  ctf.example.com
+pulumi config set gzctf-eks:acmCertificateArn arn:aws:acm:...   # optional HTTPS
+pulumi up
+```
+
+> [!IMPORTANT]
+> This repository has been validated by type-checking (`tsc`) but **not** by a
+> live `pulumi up`, which requires AWS credentials. Review `pulumi preview`
+> output and the cost implications (EKS, NAT, RDS, EFS, ALB) before applying.
 
 ### Configuration
 
@@ -114,6 +135,12 @@ kubectl get nodes
 | `redisNodeType`    | `cache.t4g.micro` | ElastiCache node type                     |
 | `redisNumCacheClusters` | `1`       | Redis nodes (>1 → replicas + failover)       |
 | `albChartVersion`  | `3.4.0`        | AWS Load Balancer Controller Helm chart      |
+| `gzctfImage`       | `gztime/gzctf:v1.8.6` | GZCTF container image                 |
+| `gzctfReplicas`    | `1`            | GZCTF Deployment replicas                    |
+| `gzctfAdminPassword` | _generated_  | **Secret.** Initial admin password           |
+| `publicEntry`      | _(empty)_      | Public host players use (PlatformProxy entry) |
+| `domainName`       | _(empty)_      | Ingress host (empty = match any on the ALB)  |
+| `acmCertificateArn`| _(empty)_      | ACM cert ARN → enables HTTPS on the ALB      |
 
 `aws:region` is set via the standard AWS provider config. Set the DB password
 (optional — one is generated otherwise) with:
@@ -129,7 +156,7 @@ pulumi config set --secret gzctf-eks:dbPassword 'a-strong-password'
       CoreDNS, kube-proxy, EBS CSI)
 - [x] **PR #3** — Data layer: RDS PostgreSQL + ElastiCache Redis
 - [x] **PR #4** — EFS storage class + AWS Load Balancer Controller
-- [ ] **PR #5** — GZCTF Kubernetes workload (Deployment, Service, Ingress, RBAC)
+- [x] **PR #5** — GZCTF Kubernetes workload (Deployment, Service, Ingress, RBAC)
 
 ## License
 
