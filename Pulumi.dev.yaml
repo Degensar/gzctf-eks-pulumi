@@ -14,3 +14,11 @@ config:
   gzctf-eks:nodeMinSize: "2"
   gzctf-eks:nodeMaxSize: "4"
   gzctf-eks:nodeDiskSize: "50"
+  # Data layer (dbPassword is a secret — set via `pulumi config set --secret`)
+  gzctf-eks:dbInstanceClass: db.t4g.micro
+  gzctf-eks:dbEngineVersion: "16"
+  gzctf-eks:dbAllocatedStorage: "20"
+  gzctf-eks:dbUsername: gzctf
+  gzctf-eks:dbName: gzctf
+  gzctf-eks:redisNodeType: cache.t4g.micro
+  gzctf-eks:redisNumCacheClusters: "1"
