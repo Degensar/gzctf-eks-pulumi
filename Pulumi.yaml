@@ -1,0 +1,8 @@
+name: gzctf-eks
+runtime:
+  name: nodejs
+  options:
+    packagemanager: npm
+description: >-
+  AWS EKS cluster and supporting resources (VPC, RDS PostgreSQL, ElastiCache
+  Redis, EFS, ALB ingress) for hosting the GZCTF capture-the-flag platform.

@@ -1,0 +1,45 @@
+name: Pulumi Preview
+
+# Runs `pulumi preview` against the dev stack to show the planned changes on a
+# pull request. It is opt-in: it only runs when the repository variable
+# `ENABLE_PULUMI_PREVIEW` is set to "true" and the required secrets exist
+# (PULUMI_ACCESS_TOKEN, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY). This keeps the
+# project previewable without forcing every fork to wire up cloud credentials.
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  preview:
+    if: ${{ vars.ENABLE_PULUMI_PREVIEW == 'true' }}
+    name: Preview (dev)
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: us-east-1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Pulumi preview
+        uses: pulumi/actions@v6
+        with:
+          command: preview
+          stack-name: dev
+          comment-on-pr: true
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}

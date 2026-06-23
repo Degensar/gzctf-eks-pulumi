@@ -1,0 +1,12 @@
+# Normalize line endings to LF in the repository for text files.
+* text=auto eol=lf
+
+# Keep Windows scripts as CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Treat lockfiles and binaries appropriately
+package-lock.json -diff
+*.png binary
+*.jpg binary
+*.ico binary
