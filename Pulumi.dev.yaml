@@ -8,3 +8,9 @@ config:
   gzctf-eks:vpcCidr: 10.0.0.0/16
   gzctf-eks:azCount: "2"
   gzctf-eks:singleNatGateway: "true"
+  gzctf-eks:k8sVersion: "1.32"
+  gzctf-eks:nodeInstanceType: t3.large
+  gzctf-eks:nodeDesiredSize: "2"
+  gzctf-eks:nodeMinSize: "2"
+  gzctf-eks:nodeMaxSize: "4"
+  gzctf-eks:nodeDiskSize: "50"
