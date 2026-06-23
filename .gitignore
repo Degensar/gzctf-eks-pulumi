@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build output
+bin/
+*.tsbuildinfo
+
+# Pulumi
+.pulumi/
+# Never commit local/secret stack overrides
+Pulumi.*.local.yaml
+
+# Local env / credentials
+.env
+*.pem
+kubeconfig
+kube-config.yaml
+
+# Logs / OS
+*.log
+.DS_Store
+Thumbs.db
