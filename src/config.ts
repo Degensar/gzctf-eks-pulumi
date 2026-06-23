@@ -31,3 +31,18 @@ export const network = {
    */
   singleNatGateway: cfg.getBoolean("singleNatGateway") ?? true,
 };
+
+export const cluster = {
+  /** Kubernetes control-plane version. */
+  k8sVersion: cfg.get("k8sVersion") ?? "1.32",
+  /** EC2 instance type for worker nodes. */
+  nodeInstanceType: cfg.get("nodeInstanceType") ?? "t3.large",
+  /** Desired number of worker nodes. */
+  nodeDesiredSize: cfg.getNumber("nodeDesiredSize") ?? 2,
+  /** Minimum number of worker nodes. */
+  nodeMinSize: cfg.getNumber("nodeMinSize") ?? 2,
+  /** Maximum number of worker nodes (autoscaling ceiling). */
+  nodeMaxSize: cfg.getNumber("nodeMaxSize") ?? 4,
+  /** Root EBS volume size per node, in GiB. */
+  nodeDiskSize: cfg.getNumber("nodeDiskSize") ?? 50,
+};

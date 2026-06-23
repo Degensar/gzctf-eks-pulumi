@@ -49,7 +49,9 @@ the distributed cache in ElastiCache Redis.
 ├── index.ts            # Pulumi entrypoint — wires the modules together
 ├── src/
 │   ├── config.ts       # typed stack configuration
-│   └── network.ts      # VPC, subnets, NAT
+│   ├── network.ts      # VPC, subnets, NAT
+│   ├── irsa.ts         # IAM Roles for Service Accounts helper
+│   └── cluster.ts      # EKS control plane, node group, IRSA, add-ons
 ├── Pulumi.yaml         # project definition
 ├── Pulumi.dev.yaml     # example (non-secret) dev-stack config
 └── .github/workflows/  # CI: type-check + (opt-in) pulumi preview
@@ -92,14 +94,20 @@ kubectl get nodes
 | `vpcCidr`          | `10.0.0.0/16`  | VPC CIDR block                               |
 | `azCount`          | `2`            | Availability zones to span                   |
 | `singleNatGateway` | `true`         | Share one NAT gateway (cheaper) vs one-per-AZ |
+| `k8sVersion`       | `1.32`         | EKS control-plane version                    |
+| `nodeInstanceType` | `t3.large`     | Worker node EC2 instance type                |
+| `nodeDesiredSize`  | `2`            | Desired worker node count                    |
+| `nodeMinSize`      | `2`            | Minimum worker node count                    |
+| `nodeMaxSize`      | `4`            | Maximum worker node count                    |
+| `nodeDiskSize`     | `50`           | Worker node root volume size (GiB)           |
 
 `aws:region` is set via the standard AWS provider config.
 
 ## Roadmap
 
 - [x] **PR #1** — Project scaffold, CI, VPC networking
-- [ ] **PR #2** — EKS cluster, managed node group, IRSA, EKS add-ons (CNI,
-      CoreDNS, kube-proxy, EBS/EFS CSI)
+- [x] **PR #2** — EKS cluster, managed node group, IRSA, EKS add-ons (CNI,
+      CoreDNS, kube-proxy, EBS CSI)
 - [ ] **PR #3** — Data layer: RDS PostgreSQL + ElastiCache Redis
 - [ ] **PR #4** — EFS storage class + AWS Load Balancer Controller
 - [ ] **PR #5** — GZCTF Kubernetes workload (Deployment, Service, Ingress, RBAC)
