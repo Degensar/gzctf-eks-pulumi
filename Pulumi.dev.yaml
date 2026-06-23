@@ -24,3 +24,10 @@ config:
   gzctf-eks:redisNumCacheClusters: "1"
   # Ingress
   gzctf-eks:albChartVersion: "3.4.0"
+  # GZCTF platform (gzctfAdminPassword is a secret — set via `--secret`)
+  gzctf-eks:gzctfImage: gztime/gzctf:v1.8.6
+  gzctf-eks:gzctfReplicas: "1"
+  gzctf-eks:gzctfFilesStorageSize: 10Gi
+  # gzctf-eks:publicEntry: ctf.example.com
+  # gzctf-eks:domainName: ctf.example.com
+  # gzctf-eks:acmCertificateArn: arn:aws:acm:us-east-1:123456789012:certificate/...
