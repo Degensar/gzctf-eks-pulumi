@@ -1,0 +1,10 @@
+# Example (non-secret) configuration for the `dev` stack.
+#
+# Secrets (database password, GZCTF admin password) are NOT stored here — set
+# them with `pulumi config set --secret ...` which writes encrypted values.
+config:
+  aws:region: us-east-1
+  gzctf-eks:namePrefix: gzctf
+  gzctf-eks:vpcCidr: 10.0.0.0/16
+  gzctf-eks:azCount: "2"
+  gzctf-eks:singleNatGateway: "true"
