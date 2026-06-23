@@ -7,7 +7,8 @@
  *   - cluster  : EKS control plane, node group, addons, IRSA  (implemented)
  *   - database : RDS PostgreSQL  (implemented)
  *   - cache    : ElastiCache Redis  (implemented)
- *   - storage  : EFS for /app/files  (planned)
+ *   - storage  : EFS for /app/files  (implemented)
+ *   - loadBalancer : AWS Load Balancer Controller (ALB ingress)  (implemented)
  *   - gzctf    : Kubernetes workload (Deployment, Service, Ingress, RBAC) (planned)
  */
 import * as pulumi from "@pulumi/pulumi";
@@ -15,12 +16,16 @@ import * as pulumi from "@pulumi/pulumi";
 import { createCache } from "./src/cache";
 import { createCluster } from "./src/cluster";
 import { createDatabase } from "./src/database";
+import { installLoadBalancerController } from "./src/loadBalancer";
 import { createNetwork } from "./src/network";
+import { createStorage } from "./src/storage";
 
 const net = createNetwork();
 const eks = createCluster(net);
 const db = createDatabase(net, eks);
 const redis = createCache(net, eks);
+const storage = createStorage(net, eks);
+installLoadBalancerController(net, eks);
 
 // Networking
 export const vpcId = net.vpcId;
@@ -38,3 +43,7 @@ export const kubeconfig = pulumi.secret(eks.kubeconfig);
 export const dbEndpoint = db.endpoint;
 export const dbConnectionString = db.connectionString; // secret
 export const redisConnectionString = redis.connectionString;
+
+// Storage
+export const efsFileSystemId = storage.fileSystem.id;
+export const storageClassName = storage.storageClassName;
