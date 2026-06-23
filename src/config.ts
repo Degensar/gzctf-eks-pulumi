@@ -64,6 +64,11 @@ export const cache = {
   numCacheClusters: cfg.getNumber("redisNumCacheClusters") ?? 1,
 };
 
+export const loadBalancer = {
+  /** Helm chart version for the AWS Load Balancer Controller. */
+  chartVersion: cfg.get("albChartVersion") ?? "3.4.0",
+};
+
 export const cluster = {
   /** Kubernetes control-plane version. */
   k8sVersion: cfg.get("k8sVersion") ?? "1.32",

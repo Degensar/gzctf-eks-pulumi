@@ -54,7 +54,10 @@ the distributed cache in ElastiCache Redis.
 │   ├── cluster.ts      # EKS control plane, node group, IRSA, add-ons
 │   ├── security.ts     # data-store security-group helper
 │   ├── database.ts     # RDS PostgreSQL
-│   └── cache.ts        # ElastiCache Redis
+│   ├── cache.ts        # ElastiCache Redis
+│   ├── storage.ts      # EFS filesystem + CSI driver + StorageClass
+│   ├── loadBalancer.ts # AWS Load Balancer Controller (Helm + IRSA)
+│   └── iam/            # vendored IAM policy for the LB controller
 ├── Pulumi.yaml         # project definition
 ├── Pulumi.dev.yaml     # example (non-secret) dev-stack config
 └── .github/workflows/  # CI: type-check + (opt-in) pulumi preview
@@ -110,6 +113,7 @@ kubectl get nodes
 | `dbPassword`       | _generated_    | **Secret.** Set with `--secret`; auto-generated if unset |
 | `redisNodeType`    | `cache.t4g.micro` | ElastiCache node type                     |
 | `redisNumCacheClusters` | `1`       | Redis nodes (>1 → replicas + failover)       |
+| `albChartVersion`  | `3.4.0`        | AWS Load Balancer Controller Helm chart      |
 
 `aws:region` is set via the standard AWS provider config. Set the DB password
 (optional — one is generated otherwise) with:
@@ -124,7 +128,7 @@ pulumi config set --secret gzctf-eks:dbPassword 'a-strong-password'
 - [x] **PR #2** — EKS cluster, managed node group, IRSA, EKS add-ons (CNI,
       CoreDNS, kube-proxy, EBS CSI)
 - [x] **PR #3** — Data layer: RDS PostgreSQL + ElastiCache Redis
-- [ ] **PR #4** — EFS storage class + AWS Load Balancer Controller
+- [x] **PR #4** — EFS storage class + AWS Load Balancer Controller
 - [ ] **PR #5** — GZCTF Kubernetes workload (Deployment, Service, Ingress, RBAC)
 
 ## License

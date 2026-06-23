@@ -22,3 +22,5 @@ config:
   gzctf-eks:dbName: gzctf
   gzctf-eks:redisNodeType: cache.t4g.micro
   gzctf-eks:redisNumCacheClusters: "1"
+  # Ingress
+  gzctf-eks:albChartVersion: "3.4.0"
